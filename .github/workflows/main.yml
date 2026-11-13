@@ -1,0 +1,44 @@
+
+name: RERA Android APK Builder
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build RERA APK
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: RERA_Android_Starter
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: '8.9'
+
+      - name: Build Debug APK
+        run: gradle assembleDebug
+
+      - name: Upload RERA APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: RERA-Android-APK
+          path: RERA_Android_Starter/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
